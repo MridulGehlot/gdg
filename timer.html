@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Minimal Big Timer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Inter", sans-serif;
+  }
+
+  body {
+    height: 100vh;
+    background: #f8f8f8;
+    color: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    text-align: center;
+    width: 90%;
+    max-width: 700px;
+  }
+
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+  }
+
+  .timer {
+    font-size: 90px;
+    font-weight: 600;
+    letter-spacing: 4px;
+  }
+
+  .labels {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-top: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+  }
+
+  /* INPUT STYLE (minimal like design) */
+  .set-time {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+  }
+
+  .set-time input {
+    width: 70px;
+    padding: 10px;
+    text-align: center;
+    border: none;
+    border-bottom: 1px solid #aaa;
+    background: transparent;
+    font-size: 18px;
+    outline: none;
+  }
+
+  .set-time input::placeholder {
+    opacity: 0.4;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 50px;
+    background: #ddd;
+    border-radius: 50px;
+    margin-top: 50px;
+    overflow: hidden;
+border: 1px solid #aaa;
+padding: 5px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 100%;
+    background: #111111;
+border-radius: 50px;
+
+    transition: width 1s linear;
+  }
+
+  .controls {
+    margin-top: 30px;
+  }
+
+  button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    background: #111;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+</style>
+</head>
+
+<body>
+<img src="logo.png" width="400px"/>
+
+<div class="container">
+  <div class="timer" id="timer">00 : 05 : 00</div>
+
+  <div class="labels">
+    <span>Hours</span>
+    <span>Minutes</span>
+    <span>Seconds</span>
+  </div>
+
+  <!-- SET TIMER INPUT -->
+  <div class="set-time">
+    <input type="number" id="hours" placeholder="HH" min="0">
+    <input type="number" id="minutes" placeholder="MM" min="0">
+    <input type="number" id="seconds" placeholder="SS" min="0">
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progress"></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="setTimer()">Set</button>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="pauseTimer()">Pause</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
+</div>
+
+<script>
+  let totalTime = 300; // default 5 min
+  let remainingTime = totalTime;
+  let interval = null;
+
+  function updateUI() {
+    let hrs = Math.floor(remainingTime / 3600);
+    let mins = Math.floor((remainingTime % 3600) / 60);
+    let secs = remainingTime % 60;
+
+    document.getElementById("timer").innerText =
+      String(hrs).padStart(2, '0') + " : " +
+      String(mins).padStart(2, '0') + " : " +
+      String(secs).padStart(2, '0');
+
+    let progressPercent = totalTime > 0 
+      ? (remainingTime / totalTime) * 100 
+      : 0;
+
+    document.getElementById("progress").style.width = progressPercent + "%";
+  }
+
+  function setTimer() {
+    let h = parseInt(document.getElementById("hours").value) || 0;
+    let m = parseInt(document.getElementById("minutes").value) || 0;
+    let s = parseInt(document.getElementById("seconds").value) || 0;
+
+    totalTime = (h * 3600) + (m * 60) + s;
+    remainingTime = totalTime;
+
+    updateUI();
+  }
+
+  function startTimer() {
+    if (interval || remainingTime <= 0) return;
+
+    interval = setInterval(() => {
+      if (remainingTime > 0) {
+        remainingTime--;
+        updateUI();
+      } else {
+        clearInterval(interval);
+        interval = null;
+        alert("Time's up!");
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    clearInterval(interval);
+    interval = null;
+  }
+
+  function resetTimer() {
+    clearInterval(interval);
+    interval = null;
+    remainingTime = totalTime;
+    updateUI();
+  }
+
+  updateUI();
+</script>
+
+</body>
+</html>
